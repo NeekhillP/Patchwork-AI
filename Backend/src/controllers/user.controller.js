@@ -31,4 +31,50 @@ export const createUserController = async (req, res) => {
 }
 
 
+export const loginUserController = async (req, res) =>{
+    const errors = validationResult(req);
+
+    if(!errors.isEmpty()){
+        return res.status(400).json({
+            errors: errors.array()
+        });
+    }
+
+    try{
+        const {email , password} = req.body;
+
+        const user = await userModel.findOne({email}).select('+password');
+
+        if(!user){
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        const isMatch = await user.comparePassword(password);
+
+       if(!isMatch){
+            return res.status(400).json({
+                message: "Invalid credentials"
+            });
+       }
+       
+       const token = await user.generateJWT();
+
+       res.status(200).json({
+            message: "User logged in successfully",
+            user: {
+                id: user._id,
+                email: user.email
+            },
+            token
+       })
+    } catch(error){
+        res.status(500).json({
+            message: error.message
+        })
+    }
+}
+
+
 

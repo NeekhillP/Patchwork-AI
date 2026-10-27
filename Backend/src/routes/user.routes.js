@@ -36,4 +36,12 @@ router.post('/login',
 router.get('/profile', authUserMiddleware, userController.getUserProfileController);
 
 
+/**
+ * @route POST /users/logout
+ * @desc Logout a user
+ * @access Private
+ */
+router.post('/logout', authUserMiddleware, userController.logoutUserController)
+
+
 export default router;

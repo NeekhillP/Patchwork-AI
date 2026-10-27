@@ -30,7 +30,6 @@ export const createUserController = async (req, res) => {
     }
 }
 
-
 export const loginUserController = async (req, res) =>{
     const errors = validationResult(req);
 
@@ -83,3 +82,19 @@ export const getUserProfileController = async (req, res) => {
     })
 }
 
+export const logoutUserController = async (req, res) =>{
+    try{
+        const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+
+        redisClient.set(token, "logout", "EX", 60 * 60 * 24);
+
+        res.status(200).json({
+            message: "User logged out successfully"
+        })
+
+    } catch(error){
+        res.status(400).json({
+            message: error.message
+        })
+    }
+}

@@ -28,6 +28,11 @@ router.post('/login',
     userController.loginUserController
 )
 
+/**
+ * @route GET /users/profile
+ * @desc Get user profile
+ * @access Private
+ */
 router.get('/profile', authUserMiddleware, userController.getUserProfileController);
 
 

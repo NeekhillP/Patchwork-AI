@@ -5,7 +5,16 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: Object.fromEntries(
+        ['canvas', 'panel', 'raised', 'line', 'ink', 'muted', 'accent', 'paper', 'danger']
+          .map((name) => [name, `rgb(var(--${name}) / <alpha-value>)`]),
+      ),
+      fontFamily: {
+        sans: ['Segoe UI', 'Arial', 'sans-serif'],
+        editorial: ['Georgia', 'serif'],
+      },
+    },
   },
   plugins: [],
 }

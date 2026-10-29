@@ -36,7 +36,7 @@ components:
 
 Product UI for people signing into a shared AI conversation workspace. English is the current UI language; no specific geographic market is established. The visual reference is a studio pinboard: differently shaped pieces assembled into one whole. The signature is a four-piece mark and a compact conversation quilt. Keep forms familiar and quiet; avoid glowing gradients, stock testimonials, fake usage metrics, and unsupported social login.
 
-Runtime CSS is canonical: `Frontend/src/index.css` owns RGB color tuples and scrollbar tokens; `Frontend/tailwind.config.js` adapts the variables with alpha support into semantic utilities. This document mirrors accepted values in hex. AuthLayout owns composition, AuthForm owns fields, validation, feedback, and request state. Login and Register are mode wrappers, with no duplicate form implementation.
+Runtime CSS is canonical: `Frontend/src/index.css` owns RGB color tuples and scrollbar tokens; `Frontend/tailwind.config.js` adapts the variables with alpha support into semantic utilities. This document mirrors accepted values in hex. AuthLayout owns composition; AuthForm owns fields, validation, feedback, and request state. Login and Register each control their email/password state and supply an Axios submit handler through AuthForm props. Neither duplicates form markup. The public `/` route always renders the dummy Home page, including after successful authentication.
 
 ## Colors
 

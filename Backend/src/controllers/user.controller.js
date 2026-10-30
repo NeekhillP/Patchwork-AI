@@ -20,7 +20,7 @@ export const createUserController = async (req, res) => {
 
         res.status(201).json({
             message: "User created successfully",
-            user,
+            user: { id: user._id, email: user.email },
             token
         })
     } catch(error){
@@ -86,7 +86,7 @@ export const logoutUserController = async (req, res) =>{
     try{
         const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
 
-        redisClient.set(token, "logout", "EX", 60 * 60 * 24);
+        await redisClient.set(token, "logout", "EX", 60 * 60 * 24);
 
         res.status(200).json({
             message: "User logged out successfully"

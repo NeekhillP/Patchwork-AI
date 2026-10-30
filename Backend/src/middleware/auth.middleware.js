@@ -15,7 +15,7 @@ export const authUserMiddleware = async (req, res, next) =>{
         const isBlacklisted = await redisClient.get(token);
 
         if(isBlacklisted){
-            res.cookies.clear('token');
+            res.clearCookie('token');
             
             return res.status(401).json({
                 message: "Unauthorized"

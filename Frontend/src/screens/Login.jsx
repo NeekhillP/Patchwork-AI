@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import AuthForm from '../components/AuthForm'
 import axios from '../config/axios'
+import { useUser } from '../context/useUser'
 
-export default function Login({ onAuthenticated }) {
+export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+
+  const { signIn } = useUser()
 
   const submitHandler = async (credentials) => {
     try {
@@ -31,7 +34,7 @@ export default function Login({ onAuthenticated }) {
       onEmailChange={(event) => setEmail(event.target.value)}
       onPasswordChange={(event) => setPassword(event.target.value)}
       onSubmit={submitHandler}
-      onAuthenticated={onAuthenticated}
+      onAuthenticated={signIn}
     />
   )
 }

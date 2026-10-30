@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AuthLayout, { PatchMark } from './AuthLayout'
-import { authRequest } from '../lib/auth'
 
 export default function AuthForm({ mode, onAuthenticated, values, onEmailChange, onPasswordChange, onSubmit }) {
   const registering = mode === 'register'
@@ -32,7 +31,7 @@ export default function AuthForm({ mode, onAuthenticated, values, onEmailChange,
     submitting.current = true
     setBusy(true)
     try {
-      const session = await (onSubmit ? onSubmit({ email, password }) : authRequest(mode, { email, password }))
+      const session = await onSubmit({ email, password })
       formRef.current.reset()
       onAuthenticated(session)
     } catch (requestError) {

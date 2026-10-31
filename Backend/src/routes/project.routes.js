@@ -54,4 +54,10 @@ router.put('/add-users',
     projectController.addUserToProjectController
 );
 
+
+router.get('/:projectId',
+    authUserMiddleware,
+    projectController.getProjectByIdController
+)
+
 export default router;

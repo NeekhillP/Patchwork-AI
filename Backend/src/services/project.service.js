@@ -74,3 +74,17 @@ export const addUsersToProject = async({projectId, users, userId}) =>{
     return updatedProject;
 
 }
+
+export const getProjectById = async({projectId}) =>{
+    if(!projectId || !isObjectIdOrHexString(projectId)){
+        throw new Error('A valid projectId is required');
+    }
+
+    const project = await projectModel.findById(projectId).populate('users', 'username email');
+
+    if(!project){
+        throw new Error('Project not found');
+    }
+
+    return project;
+}

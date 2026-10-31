@@ -112,3 +112,27 @@ export const addUserToProjectController = async(req, res) =>{
         return res.status(500).json({ message: 'Could not add user to project. Please try again later' });
     }
 }
+
+export const getProjectByIdController = async (req, res) =>{
+    const { projectId } = req.params
+
+    try{
+
+        const project = await projectService.getProjectById({
+            projectId,
+        });
+
+        if (!project) {
+            return res.status(404).json({ message: 'Project not found' });
+        }
+
+        return res.status(200).json({
+            message: 'Project retrieved successfully',
+            project
+        });
+
+    } catch(error){
+        console.log(error)
+        res.status(500).json({ message: 'Could not retrieve project. Please try again later' });
+    }
+}

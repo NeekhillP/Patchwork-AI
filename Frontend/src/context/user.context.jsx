@@ -44,6 +44,12 @@ export function UserProvider({ children }) {
     setError('')
   }
 
+  function clearSession(message = '') {
+    localStorage.removeItem('token')
+    setUser(null)
+    setError(message)
+  }
+
   async function signOut() {
     try {
       await axios.post('/users/logout')
@@ -52,13 +58,11 @@ export function UserProvider({ children }) {
         throw new Error('Could not sign out. Please try again.', { cause: requestError })
       }
     }
-    localStorage.removeItem('token')
-    setUser(null)
-    setError('')
+    clearSession()
   }
 
   return (
-    <UserContext.Provider value={{ user, loading, error, signIn, signOut }}>
+    <UserContext.Provider value={{ user, loading, error, signIn, signOut, clearSession }}>
       {children}
     </UserContext.Provider>
   )

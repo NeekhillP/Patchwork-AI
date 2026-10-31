@@ -42,3 +42,29 @@ export const createProjectController = async (req, res)=>{
         return res.status(500).json({ message: 'Could not create project. Please try again later' });
     }
 }
+
+export const getAllProjectsController = async (req, res) =>{
+    try{
+
+        const loggedInUser = await userModel.findOne({
+            email: req.user.email
+        });
+
+        if (!loggedInUser) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        const allProjects = await projectService.getAllProjects({
+            userId: loggedInUser._id
+        });;
+
+        res.status(200).json({
+            message: 'Projects retrieved successfully',
+            projects: allProjects
+        });
+
+    } catch(error){
+        console.error(error);
+        return res.status(500).json({ message: 'Could not retrieve projects. Please try again later' });
+    }
+}

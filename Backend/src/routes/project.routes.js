@@ -24,6 +24,13 @@ router.post('/create',
         .withMessage(`Name must be at most ${PROJECT_NAME_MAX_LENGTH} characters long`),
     projectController.createProjectController
 )
+    
+/**
+ * @route GET /projects/all
+ * @desc Get all projects for the logged-in user
+ * @access Private
+ */
+router.get('/all', authUserMiddleware, projectController.getAllProjectsController)
 
 
 export default router;

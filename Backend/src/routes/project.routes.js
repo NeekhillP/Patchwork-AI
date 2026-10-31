@@ -32,5 +32,26 @@ router.post('/create',
  */
 router.get('/all', authUserMiddleware, projectController.getAllProjectsController)
 
+/**
+ * @route PUT /projects/add-users
+ * @desc Add users to a project
+ * @access Private
+ */
+router.put('/add-users',
+    authUserMiddleware,
+    body('projectId')
+        .isString().withMessage('Project ID must be a string')
+        .bail()
+        .isMongoId().withMessage('A valid project ID is required')
+        .bail(),
+    body('users')
+        .isArray({ min: 1 }).withMessage('Users must be a non-empty array')
+        .bail(),
+    body('users.*')
+        .isString().withMessage('Each user ID must be a string')
+        .bail()
+        .isMongoId().withMessage('Each user ID must be a valid MongoDB ID'),
+    projectController.addUserToProjectController
+);
 
 export default router;

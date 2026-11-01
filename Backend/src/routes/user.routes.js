@@ -43,5 +43,12 @@ router.get('/profile', authUserMiddleware, userController.getUserProfileControll
  */
 router.post('/logout', authUserMiddleware, userController.logoutUserController)
 
+/**
+ * @route GET /users/all
+ * @desc Get all users
+ * @access Private
+ */
+router.get('/all', authUserMiddleware, userController.getAllUsersController);
+
 
 export default router;

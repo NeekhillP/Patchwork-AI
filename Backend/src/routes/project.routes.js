@@ -24,6 +24,40 @@ router.post('/create',
         .withMessage(`Name must be at most ${PROJECT_NAME_MAX_LENGTH} characters long`),
     projectController.createProjectController
 )
+    
+/**
+ * @route GET /projects/all
+ * @desc Get all projects for the logged-in user
+ * @access Private
+ */
+router.get('/all', authUserMiddleware, projectController.getAllProjectsController)
 
+/**
+ * @route PUT /projects/add-users
+ * @desc Add users to a project
+ * @access Private
+ */
+router.put('/add-users',
+    authUserMiddleware,
+    body('projectId')
+        .isString().withMessage('Project ID must be a string')
+        .bail()
+        .isMongoId().withMessage('A valid project ID is required')
+        .bail(),
+    body('users')
+        .isArray({ min: 1 }).withMessage('Users must be a non-empty array')
+        .bail(),
+    body('users.*')
+        .isString().withMessage('Each user ID must be a string')
+        .bail()
+        .isMongoId().withMessage('Each user ID must be a valid MongoDB ID'),
+    projectController.addUserToProjectController
+);
+
+
+router.get('/:projectId',
+    authUserMiddleware,
+    projectController.getProjectByIdController
+)
 
 export default router;

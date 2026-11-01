@@ -30,7 +30,7 @@ export default function ProjectList({ projects, loading, error, signedIn, onRetr
         <p role="status" className="sr-only">{loading ? 'Refreshing projects…' : `${projects.length} projects loaded.`}</p>
         <ul aria-label="Your projects" className="grid content-start gap-4 sm:grid-cols-2">
           {projects.map((project) => <li key={project._id} className="min-w-0">
-            <Link to={`/projects/${project._id}`} aria-label={`Open project ${project.name}`} className="block h-full rounded-2xl border border-line bg-panel p-6 transition-colors hover:border-accent/50 hover:bg-raised/50 active:bg-raised">
+            <Link to={`/projects/${project._id}`} state={{ projectId: project._id, projectName: project.name }} aria-label={`Open project ${project.name}`} className="block h-full rounded-2xl border border-line bg-panel p-6 transition-colors hover:border-accent/50 hover:bg-raised/50 active:bg-raised">
               <div className="mb-6 flex items-center justify-between">
                 <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent/10 text-accent"><Icon name="folder" /></span>
                 {project.users.length > 1 && <span className="rounded-full border border-line px-2.5 py-1 text-[10px] text-muted">Shared</span>}

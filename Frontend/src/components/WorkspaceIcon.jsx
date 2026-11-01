@@ -7,6 +7,8 @@ const paths = {
   logout: 'M9 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h4M14 8l4 4-4 4M8 12h12',
   close: 'm6 6 12 12M6 18 18 6',
   refresh: 'M20 7v5h-5M4 17v-5h5M6.1 6.1a8 8 0 0 1 13.2 2.8M4.7 15.1a8 8 0 0 0 13.2 2.8',
+  back: 'M19 12H5m7 7-7-7 7-7',
+  send: 'm22 2-7 20-4-9-9-4 20-7ZM22 2 11 13',
 }
 
 export default function WorkspaceIcon({ name, className = 'h-5 w-5' }) {

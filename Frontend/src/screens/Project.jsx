@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import ProjectChat from '../components/ProjectChat'
 import axios from '../config/axios'
 import { useUser } from '../context/useUser'
+import {initializeSocket, receiveMessage, sendMessage} from '../config/socket'
 
 export default function Project() {
   const { projectId } = useParams()

@@ -2,6 +2,7 @@ import { Route, Routes, BrowserRouter, Navigate } from 'react-router-dom'
 import Login from '../screens/Login'
 import Register from '../screens/Register'
 import Home from '../screens/Home'
+import Project from '../screens/Project'
 import { useUser } from '../context/useUser'
 
 const AppRoutes = () => {
@@ -11,6 +12,7 @@ const AppRoutes = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/projects/:projectId" element={user ? <Project /> : <Navigate to="/login" replace />} />
         <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
         <Route path="/register" element={user ? <Navigate to="/" replace /> : <Register />} />
         <Route path="*" element={<Navigate to="/" replace />} />

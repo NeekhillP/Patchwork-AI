@@ -38,7 +38,7 @@ export default function NewProjectDialog({ dialogRef, onCreated }) {
 
     try {
       const { data } = await axios.post('/projects/create', { name: projectName })
-      if (!data.project?._id || typeof data.project.name !== 'string') {
+      if (!data.project?._id || typeof data.project.name !== 'string' || !Array.isArray(data.project.users)) {
         setFailure({ message: 'The server did not return the project details. Creation could not be confirmed.' })
         return
       }

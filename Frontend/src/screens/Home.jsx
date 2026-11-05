@@ -2,36 +2,20 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { PatchMark } from '../components/AuthLayout'
 import NewProjectDialog from '../components/NewProjectDialog'
+import ProjectList from '../components/ProjectList'
 import Icon from '../components/WorkspaceIcon'
 import { useUser } from '../context/useUser'
-
-function ProjectArtwork() {
-  return (
-    <svg className="h-40 w-40" viewBox="0 0 160 160" fill="none" aria-hidden="true">
-      <rect x="9" y="9" width="66" height="66" rx="16" className="fill-accent" />
-      <path d="M42 22v40M22 42h40M28 28l28 28m0-28L28 56" className="stroke-canvas" strokeWidth="7" />
-      <g transform="rotate(7 117 42)">
-        <rect x="84" y="9" width="66" height="66" rx="6" className="fill-paper" />
-        <path d="M97 29h39M97 41h28M97 53h34" className="stroke-canvas/40" strokeWidth="2" />
-      </g>
-      <rect x="9" y="85" width="66" height="66" rx="6" className="fill-raised stroke-line" />
-      <path d="M25 112h34M25 122h22" className="stroke-accent" strokeWidth="3" strokeLinecap="round" />
-      <rect x="85" y="85" width="66" height="66" rx="16" className="stroke-accent/50" strokeDasharray="4 5" />
-      <path d="M118 106v24M106 118h24" className="stroke-accent/70" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  )
-}
+import useProjects from '../hooks/useProjects'
 
 export default function Home() {
-  const { user, error, signOut } = useUser()
+  const { user, error, signOut, clearSession } = useUser()
   const [busy, setBusy] = useState(false)
   const [logoutError, setLogoutError] = useState('')
-  const [projectState, setProjectState] = useState({ ownerId: null, items: [], message: '' })
+  const { projects, loading, error: projectError, notice, refresh, addProject } = useProjects(user?.id, clearSession)
   const dialogRef = useRef(null)
   const navigate = useNavigate()
   const initial = (user?.email?.[0] || 'P').toUpperCase()
-  const projects = user && projectState.ownerId === user.id ? projectState.items : []
-  const notice = user && projectState.ownerId === user.id ? projectState.message : ''
+  const projectCount = (loading || projectError) && !projects.length ? '—' : projects.length
 
   useEffect(() => { document.title = 'Your workspace · PatchWork AI' }, [])
 
@@ -39,14 +23,6 @@ export default function Home() {
     if (!user) return navigate('/login')
     dialogRef.current.showModal()
     dialogRef.current.querySelector('input').focus()
-  }
-
-  function handleProjectCreated(project) {
-    setProjectState((previous) => ({
-      ownerId: user.id,
-      items: [project, ...(previous.ownerId === user.id ? previous.items : [])],
-      message: `Project “${project.name}” created.`,
-    }))
   }
 
   async function handleSignOut() {
@@ -79,7 +55,7 @@ export default function Home() {
 
         <nav aria-label="Workspace" className="mt-9 hidden lg:block">
           <p className="mb-3 px-3 text-[10px] font-medium uppercase tracking-[0.16em] text-muted">Workspace</p>
-          <a href="#projects" aria-current="page" className="flex items-center gap-3 rounded-lg bg-accent/10 px-3 py-3 text-sm font-medium text-accent transition-colors hover:bg-accent/15 active:bg-accent/20"><Icon name="folder" className="h-[18px] w-[18px]" />Projects<span className="ml-auto text-xs">{projects.length}</span></a>
+          <a href="#projects" aria-current="page" className="flex items-center gap-3 rounded-lg bg-accent/10 px-3 py-3 text-sm font-medium text-accent transition-colors hover:bg-accent/15 active:bg-accent/20"><Icon name="folder" className="h-[18px] w-[18px]" />Projects<span className="ml-auto text-xs">{projectCount}</span></a>
           <button type="button" disabled title="Conversations are coming soon" className="mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm text-muted/70"><Icon name="chat" className="h-[18px] w-[18px]" />Conversations<span className="ml-auto rounded border border-line px-1.5 py-0.5 text-[9px] uppercase tracking-wide">Soon</span></button>
         </nav>
 
@@ -118,22 +94,16 @@ export default function Home() {
           <p role="status" className="mt-4 min-h-5 text-sm text-accent">{notice}</p>
 
           <section id="projects" aria-labelledby="projects-heading" className="mt-12 scroll-mt-6">
-            <div className="mb-5 flex items-center gap-3"><h2 id="projects-heading" className="text-sm font-medium">Your projects</h2><span className="flex h-5 min-w-5 items-center justify-center rounded-md border border-line px-1 text-[10px] text-muted">{projects.length}</span><span className="ml-1 h-px flex-1 bg-line/70" /><span className="text-[10px] text-muted">Created this visit</span></div>
+            <div className="mb-5 flex flex-wrap items-center gap-3">
+              <h2 id="projects-heading" className="text-sm font-medium">Your projects</h2>
+              <span className="flex h-5 min-w-5 items-center justify-center rounded-md border border-line px-1 text-[10px] text-muted">{projectCount}</span>
+              <span className="ml-1 h-px flex-1 bg-line/70" />
+              {user && <button type="button" onClick={refresh} disabled={loading} className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-line px-3 text-xs text-muted transition-colors hover:bg-raised hover:text-ink active:bg-line disabled:opacity-50"><Icon name="refresh" className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />{loading ? 'Loading…' : 'Refresh projects'}</button>}
+              <p className="w-full text-xs text-muted">Projects you’ve started or joined, all in one place.</p>
+            </div>
 
             <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_280px]">
-              {projects.length ? <ul aria-label="Projects created this visit" className="grid content-start gap-4 sm:grid-cols-2">
-                {projects.map((project) => <li key={project._id} className="min-w-0 rounded-2xl border border-line bg-panel p-6">
-                  <span className="mb-6 flex h-11 w-11 items-center justify-center rounded-xl bg-accent/10 text-accent"><Icon name="folder" /></span>
-                  <h3 className="break-words text-lg font-medium tracking-tight">{project.name}</h3>
-                  <p className="mt-2 text-xs text-muted">{project.users?.length || 1} {project.users?.length === 1 || !project.users?.length ? 'member' : 'members'}</p>
-                </li>)}
-              </ul> : <div className="relative flex min-h-[440px] flex-col items-center justify-center overflow-hidden rounded-2xl border border-line bg-panel/40 px-5 py-12 text-center">
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-48 opacity-35 [background-image:radial-gradient(rgb(var(--line))_1px,transparent_1px)] [background-size:20px_20px]" aria-hidden="true" />
-                <div className="relative"><ProjectArtwork /></div>
-                <h3 className="mt-7 text-xl font-medium tracking-tight">A blank canvas. A fresh start.</h3>
-                <p className="mt-3 max-w-xs text-sm leading-6 text-muted">Every great idea starts somewhere. Create a project and give yours a place to grow.</p>
-                <button type="button" onClick={openNewProject} className="mt-7 inline-flex min-h-11 items-center gap-2 rounded-lg border border-line bg-raised/60 px-4 text-xs font-medium transition-colors hover:border-accent/50 hover:bg-raised active:bg-line"><Icon name="plus" className="h-4 w-4" />Create your first project<Icon name="arrow" className="ml-1 h-3.5 w-3.5 text-muted" /></button>
-              </div>}
+              <ProjectList projects={projects} loading={loading} error={projectError} signedIn={Boolean(user)} onRetry={refresh} onCreate={openNewProject} />
 
               <aside aria-labelledby="workspace-note" className="flex flex-col rounded-2xl bg-paper p-7 text-canvas sm:p-8">
                 <div className="flex items-center justify-between"><span className="text-[9px] font-semibold uppercase tracking-[0.16em]">The PatchWork way</span><PatchMark className="h-5 w-5" /></div>
@@ -153,7 +123,7 @@ export default function Home() {
         </main>
       </div>
 
-      <NewProjectDialog dialogRef={dialogRef} onCreated={handleProjectCreated} />
+      <NewProjectDialog dialogRef={dialogRef} onCreated={addProject} />
     </div>
   )
 }

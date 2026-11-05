@@ -71,19 +71,22 @@ export const addUsersToProject = async({projectId, users, userId}) =>{
         throw projectError(403, 'The project is no longer available or your access has changed');
     }
 
-    return updatedProject;
+    return updatedProject.populate('users', 'email');
 
 }
 
-export const getProjectById = async({projectId}) =>{
-    if(!projectId || !isObjectIdOrHexString(projectId)){
-        throw new Error('A valid projectId is required');
+export const getProjectById = async({projectId, userId}) =>{
+    if (!isObjectIdOrHexString(projectId)) {
+        throw projectError(400, 'A valid projectId is required');
+    }
+    if (!isObjectIdOrHexString(userId)) {
+        throw projectError(401, 'Unauthorized');
     }
 
-    const project = await projectModel.findById(projectId).populate('users', 'username email');
+    const project = await projectModel.findOne({ _id: projectId, users: userId }).populate('users', 'email');
 
     if(!project){
-        throw new Error('Project not found');
+        throw projectError(404, 'Project not found or access denied');
     }
 
     return project;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import axios from '../config/axios'
 import { UserContext } from './useUser'
 
@@ -44,11 +44,11 @@ export function UserProvider({ children }) {
     setError('')
   }
 
-  function clearSession(message = '') {
+  const clearSession = useCallback((message = '') => {
     localStorage.removeItem('token')
     setUser(null)
     setError(message)
-  }
+  }, [])
 
   async function signOut() {
     try {

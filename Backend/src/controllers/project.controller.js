@@ -118,13 +118,16 @@ export const getProjectByIdController = async (req, res) =>{
 
     try{
 
+        if (!isObjectIdOrHexString(req.user?.id)) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+        const loggedInUser = await userModel.findById(req.user.id).select('_id');
+        if (!loggedInUser) return res.status(401).json({ message: 'Unauthorized' });
+
         const project = await projectService.getProjectById({
             projectId,
+            userId: loggedInUser._id
         });
-
-        if (!project) {
-            return res.status(404).json({ message: 'Project not found' });
-        }
 
         return res.status(200).json({
             message: 'Project retrieved successfully',
@@ -132,7 +135,10 @@ export const getProjectByIdController = async (req, res) =>{
         });
 
     } catch(error){
-        console.log(error)
-        res.status(500).json({ message: 'Could not retrieve project. Please try again later' });
+        if ([400, 401, 403, 404].includes(error.statusCode)) {
+            return res.status(error.statusCode).json({ message: error.message });
+        }
+        console.error(error);
+        return res.status(500).json({ message: 'Could not retrieve project. Please try again later' });
     }
 }

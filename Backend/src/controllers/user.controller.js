@@ -2,6 +2,7 @@ import userModel from "../models/user.model.js";
 import * as userService from "../services/user.service.js";
 import { validationResult } from "express-validator";
 import redisClient from "../services/redis.service.js"
+import { isObjectIdOrHexString } from 'mongoose';
 
 export const createUserController = async (req, res) => {
 
@@ -101,21 +102,24 @@ export const logoutUserController = async (req, res) =>{
 
 export const getAllUsersController = async (req, res) =>{
     try{
-        const loggedInUser = await userModel.findOne({
-            email: req.user.email
-        });
+        if (!isObjectIdOrHexString(req.user?.id)) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+        const loggedInUser = await userModel.findById(req.user.id).select('_id');
+        if (!loggedInUser) return res.status(401).json({ message: 'Unauthorized' });
 
         const allUsers = await userService.getAllUsers({
             userId: loggedInUser._id
         });
 
-        res.status(200).json({
+        return res.status(200).json({
             message: "Users fetched successfully",
             users: allUsers
         })
     } catch(error){
-        res.status(500).json({
-            message: error.message
+        console.error(error);
+        return res.status(500).json({
+            message: 'Could not retrieve users. Please try again later'
         })
     }
 }

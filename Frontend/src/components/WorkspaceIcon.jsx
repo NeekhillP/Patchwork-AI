@@ -9,6 +9,8 @@ const paths = {
   refresh: 'M20 7v5h-5M4 17v-5h5M6.1 6.1a8 8 0 0 1 13.2 2.8M4.7 15.1a8 8 0 0 0 13.2 2.8',
   back: 'M19 12H5m7 7-7-7 7-7',
   send: 'm22 2-7 20-4-9-9-4 20-7ZM22 2 11 13',
+  search: 'M21 21l-4.35-4.35M19 11a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z',
+  userPlus: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0ZM20 7v6M17 10h6',
 }
 
 export default function WorkspaceIcon({ name, className = 'h-5 w-5' }) {
